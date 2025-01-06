@@ -4,28 +4,28 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.userentity.entities.Hotel;
 import com.userentity.entities.Rating;
 import com.userentity.entities.User;
 import com.userentity.exceptions.ResourceNotFoundExceptions;
+import com.userentity.feignClient.HotelClient;
+import com.userentity.feignClient.RatingClient;
 import com.userentity.repositories.UserRepo;
 
 @Service
 public class UserServiceImpl implements UserService {
 
 	private UserRepo repo;
-	private RestTemplate template;
+	private HotelClient hotelClient;
+	private RatingClient ratingClient;
 
-	public UserServiceImpl(UserRepo repo, RestTemplate template) {
-		super();
+	public UserServiceImpl(UserRepo repo, HotelClient hotelClient, RatingClient ratingClient) {
 		this.repo = repo;
-
-		this.template = template;
+		this.hotelClient = hotelClient;
+		this.ratingClient = ratingClient;
 	}
 
 	@Override
@@ -36,17 +36,15 @@ public class UserServiceImpl implements UserService {
 		List<User> completeUser = allUsers.stream().map(user -> {
 
 			// GET ALL RATINGS OF SPECIFIC USER
-			Rating[] ListOfRatings = template.getForObject("http://localhost:8083/rating/user/" + user.getUserId(),
-					Rating[].class);
-			List<Rating> userRatings = List.of(ListOfRatings);
+			ResponseEntity<List<Rating>> ratingsEntity = ratingClient.getRatingsByUserId(user.getUserId());
+			List<Rating> userRatings = ratingsEntity.getBody();
 
 			// PLACE HOTEL OBJECT INSIDE EACH RATING
 			List<Rating> ratings = userRatings.stream().map(rating -> {
 				String hotelId = rating.getHotelId();
 
 				// GET HOTEL BY HOTEL ID
-				ResponseEntity<Hotel> hotel = template.getForEntity("http://localhost:8082/hotel/" + hotelId,
-						Hotel.class);
+				ResponseEntity<Hotel> hotel = hotelClient.getHotelById(hotelId);
 
 				rating.setHotel(hotel.getBody());
 				return rating;
@@ -67,14 +65,14 @@ public class UserServiceImpl implements UserService {
 				.orElseThrow(() -> new ResourceNotFoundExceptions("user with userId not fund"));
 
 		// GET ALL RATINGS OF USER BY USER_ID
-		Rating[] ListOfRatings = template.getForObject("http://localhost:8083/rating/user/" + userId, Rating[].class);
-		List<Rating> userRatings = List.of(ListOfRatings);
+		ResponseEntity<List<Rating>> ratingsByUserId = ratingClient.getRatingsByUserId(userId);
+		List<Rating> userRatings = ratingsByUserId.getBody();
 
 		List<Rating> ratings = userRatings.stream().map(rating -> {
 			String hotelId = rating.getHotelId();
 
 			// GET HOTEL BY HOTEL ID
-			ResponseEntity<Hotel> hotel = template.getForEntity("http://localhost:8082/hotel/" + hotelId, Hotel.class);
+			ResponseEntity<Hotel> hotel = hotelClient.getHotelById(hotelId);
 
 			rating.setHotel(hotel.getBody());
 			return rating;
