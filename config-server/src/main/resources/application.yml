@@ -1,0 +1,13 @@
+server:
+    port: 8085
+
+spring:
+    application:
+           name: CONFIG-SERVER
+
+#CONFIG SERVER PROPERTIES
+    cloud:
+       config:
+           server:
+               git:
+                  uri: https://github.com/Tushar-Khushal-Mahajan/config-server-props
