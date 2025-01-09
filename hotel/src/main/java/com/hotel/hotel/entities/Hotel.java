@@ -3,8 +3,6 @@ package com.hotel.hotel.entities;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -22,11 +20,11 @@ import lombok.ToString;
 @Entity
 @Table(name = "hotel")
 public class Hotel {
-  @Id
-  private String HotelId;
-  private String Hotelname;
-  private String address;
+	@Id
+	private String HotelId;
+	private String Hotelname;
+	private String address;
 
-  @Transient
-  private List<Rating> rating = new ArrayList<Rating>();
+	@Transient
+	private List<Rating> rating = new ArrayList<Rating>();
 }

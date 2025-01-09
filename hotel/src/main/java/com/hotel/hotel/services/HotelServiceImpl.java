@@ -1,15 +1,12 @@
 package com.hotel.hotel.services;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.hotel.hotel.entities.Hotel;
-import com.hotel.hotel.entities.Rating;
 import com.hotel.hotel.exceptions.ResourceNotFoundException;
 import com.hotel.hotel.repositories.HotelRepo;
 
