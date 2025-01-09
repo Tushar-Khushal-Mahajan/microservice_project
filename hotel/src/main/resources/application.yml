@@ -14,10 +14,6 @@ spring:
             ddl-auto : update
         show-sql: true
 
+#CONFIG CLIENT PROPERTY
    config:
          import: optional:configserver:http://localhost:8085
-
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true

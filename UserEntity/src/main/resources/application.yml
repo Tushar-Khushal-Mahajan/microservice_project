@@ -16,8 +16,3 @@ spring:
 
   config:
         import: optional:configserver:http://localhost:8085
-
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
